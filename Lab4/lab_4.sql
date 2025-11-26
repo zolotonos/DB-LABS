@@ -1,4 +1,4 @@
--- ЧАСТИНА 1: АГРЕГАЦІЯ (GROUP BY, HAVING, Functions)
+-- ЧАСТИНА 1: АГРЕГАЦІЯ 
 
 -- 1. Базова агрегація Середня ціна всіх товарів у магазині (AVG)
 SELECT AVG(price) AS average_product_price
@@ -14,7 +14,7 @@ FROM product p
 JOIN category c ON p.category_id = c.category_id
 GROUP BY c.name;
 
--- 4. Групування + Min/Max: Найдешевший та найдорожчий товар для кожного постачальника
+-- 4. Групування + Min/Max. Найдешевший та найдорожчий товар для кожного постачальника
 SELECT s.name AS supplier_name, 
        MIN(p.price) AS min_price, 
        MAX(p.price) AS max_price
@@ -37,13 +37,13 @@ FROM "order" o
 INNER JOIN customer c ON o.customer_id = c.customer_id;
 
 -- 7. LEFT JOIN Список усіх клієнтів та їхніх замовлень
--- Якщо клієнт нічого не замовляв, він все одно буде в списку (з NULL у полі order_id)
+-- Якщо клієнт нічого не замовляв, він все одно буде в списку
 SELECT c.first_name, c.last_name, o.order_id, o.total_amount
 FROM customer c
 LEFT JOIN "order" o ON c.customer_id = o.customer_id;
 
 -- 8. RIGHT JOIN Перевірка категорій
--- Показує всі категорії, навіть якщо в них немає товарів (у нашій схемі всі категорії заповнені, але логіка вірна)
+-- Показує всі категорії, навіть якщо в них немає товарів
 SELECT p.name AS product_name, c.name AS category_name
 FROM product p
 RIGHT JOIN category c ON p.category_id = c.category_id;
