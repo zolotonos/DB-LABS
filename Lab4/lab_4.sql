@@ -48,11 +48,14 @@ SELECT p.name AS product_name, c.name AS category_name
 FROM product p
 RIGHT JOIN category c ON p.category_id = c.category_id;
 
--- 9. Багатотабличний JOIN Деталі замовлення (Товар + Замовлення + Кількість)
-SELECT o.order_date, p.name AS product_name, oi.quantity, oi.unit_price
-FROM order_item oi
-JOIN "order" o ON oi.order_id = o.order_id
-JOIN product p ON oi.product_id = p.product_id;
+-- 9. Багатотаблична агрегація Сума продажів по кожній категорії
+-- Об'єднує Category, Product та Order_item, щоб порахувати виручку
+SELECT c.name AS category_name, SUM(oi.quantity * oi.unit_price) AS total_sales
+FROM category c
+JOIN product p ON c.category_id = p.category_id
+JOIN order_item oi ON p.product_id = oi.product_id
+GROUP BY c.name
+ORDER BY total_sales DESC;
 
 
 -- ЧАСТИНА 3: ПІДЗАПИТИ (SUBQUERIES)
