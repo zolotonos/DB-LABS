@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model address {
+  address_id     String          @id @db.Uuid
+  street         String?         @db.VarChar(255)
+  postal_code    String?         @db.VarChar(20)
+  customer_id    String?         @db.Uuid
+  customer       customer?       @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction)
+  city_directory city_directory? @relation(fields: [postal_code], references: [postal_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_address_city")
+  order          order[]
+}
+
+model category {
+  category_id String    @id @db.Uuid
+  name        String?   @db.VarChar(100)
+  description String?
+  product     product[]
+}
+
+model city_directory {
+  postal_code String    @id @db.VarChar(20)
+  city        String    @db.VarChar(100)
+  country     String    @db.VarChar(100)
+  address     address[]
+}
+
+model customer {
+  customer_id String    @id @db.Uuid
+  first_name  String?   @db.VarChar(100)
+  last_name   String?   @db.VarChar(100)
+  email       String?   @db.VarChar(255)
+  phone       String?   @db.VarChar(50)
+  address     address[]
+  order       order[]
+}
+
+model order {
+  order_id    String       @id @db.Uuid
+  order_date  DateTime?    @db.Timestamp(6)
+  status      String?      @db.VarChar(50)
+  customer_id String?      @db.Uuid
+  address_id  String?      @db.Uuid
+  address     address?     @relation(fields: [address_id], references: [address_id], onDelete: NoAction, onUpdate: NoAction)
+  customer    customer?    @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction)
+  order_item  order_item[]
+  payment     payment[]
+}
+
+model order_item {
+  order_item_id String   @id @db.Uuid
+  quantity      Int?
+  unit_price    Decimal? @db.Decimal(10, 2)
+  order_id      String?  @db.Uuid
+  product_id    String?  @db.Uuid
+  order         order?   @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction)
+  product       product? @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model payment {
+  payment_id     String         @id @db.Uuid
+  amount         Decimal?       @db.Decimal(10, 2)
+  paid_at        DateTime?      @db.Timestamp(6)
+  order_id       String?        @db.Uuid
+  method_id      String         @db.Uuid
+  payment_method payment_method @relation(fields: [method_id], references: [method_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_payment_method")
+  order          order?         @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model payment_method {
+  method_id   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  method_name String    @unique @db.VarChar(50)
+  payment     payment[]
+}
+
+model product {
+  product_id     String       @id @db.Uuid
+  name           String?      @db.VarChar(150)
+  description    String?
+  price          Decimal?     @db.Decimal(10, 2)
+  stock_quantity Int?
+  category_id    String?      @db.Uuid
+  supplier_id    String?      @db.Uuid
+  order_item     order_item[]
+  category       category?    @relation(fields: [category_id], references: [category_id], onDelete: NoAction, onUpdate: NoAction)
+  supplier       supplier?    @relation(fields: [supplier_id], references: [supplier_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model supplier {
+  supplier_id   String    @id @db.Uuid
+  name          String?   @db.VarChar(150)
+  contact_email String?   @db.VarChar(255)
+  product       product[]
+}
