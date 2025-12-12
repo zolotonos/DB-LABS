@@ -90,6 +90,7 @@ model product {
   order_item     order_item[]
   category       category?    @relation(fields: [category_id], references: [category_id], onDelete: NoAction, onUpdate: NoAction)
   supplier       supplier?    @relation(fields: [supplier_id], references: [supplier_id], onDelete: NoAction, onUpdate: NoAction)
+  Review Review[]
 }
 
 model supplier {
@@ -97,4 +98,14 @@ model supplier {
   name          String?   @db.VarChar(150)
   contact_email String?   @db.VarChar(255)
   product       product[]
+}
+
+model Review {
+  id        Int     @id @default(autoincrement())
+  rating    Int
+  comment   String?
+  
+  // Зв'язок з продуктом
+  productId String  @db.Uuid
+  product   product @relation(fields: [productId], references: [product_id])
 }
