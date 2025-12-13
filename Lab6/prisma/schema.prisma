@@ -82,7 +82,7 @@ model payment_method {
 model product {
   product_id     String       @id @db.Uuid
   name           String?      @db.VarChar(150)
-  description    String?
+  //description    String?
   price          Decimal?     @db.Decimal(10, 2)
   stock_quantity Int?
   category_id    String?      @db.Uuid
@@ -91,6 +91,7 @@ model product {
   category       category?    @relation(fields: [category_id], references: [category_id], onDelete: NoAction, onUpdate: NoAction)
   supplier       supplier?    @relation(fields: [supplier_id], references: [supplier_id], onDelete: NoAction, onUpdate: NoAction)
   Review Review[]
+  is_active      Boolean @default(true)
 }
 
 model supplier {
